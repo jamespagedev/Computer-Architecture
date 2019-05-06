@@ -61,10 +61,27 @@ but you'll have to implement those three above instructions first!
 ## Step 0: IMPORTANT: inventory what is here!
 
 - Make a list of files here.
+  cpu.c
+  cpu.h
+  ls8.c
 - Write a short 3-10-word description of what each file does.
+  cpu.c - Controller for operations made with your cpu
+  cpu.h - predefined structs to support cpu memory
+  ls8.c - main interface used to make the cpu perform procedural operations.
 - Note what has been implemented, and what hasn't.
+
+  -has been:
+
+  - `#include "cpu.h"`
+  - `#define DATA_LEN 6`
+  - required functions (skeletons)
+  - cpu_load function preset for a run through example
+  - some comments in the functions
+  - cpu.h has some binary literals for `cpu_run()`
+
 - Read this whole file.
 - Skim the spec.
+  Mostly instructions on the switch calls.
 
 ## Step 1: Implement `struct cpu` in `cpu.h`
 
