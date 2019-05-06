@@ -2,6 +2,17 @@
 
 #define DATA_LEN 6
 
+/*
+  Helper Functions
+  In `cpu.c`, add functions `cpu_ram_read()` and `cpu_ram_write()` that access the
+  RAM inside the `struct cpu`.
+
+  We'll make use of these helper function later.
+  */
+void cpu_ram_read(struct cpu *cpu) {}
+
+void cpu_ram_write(struct cpu *cpu) {}
+
 /**
  * Load the binary bytes from a .ls8 source file into a RAM array
  */
