@@ -149,8 +149,7 @@ void cpu_run(struct cpu *cpu)
     IR = cpu_ram_read(cpu, cpu->PC);
     if (IR == HLT)
     {
-      running = 0;
-      continue;
+      return;
     }
     print_ir_bin_hex_dec(IR);
     printf("\n");
