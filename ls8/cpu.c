@@ -168,18 +168,18 @@ void cpu_run(struct cpu *cpu)
     // 5. Do whatever the instruction should do according to the spec.
     // 6. Move the PC to the next instruction.
     case LDI:
-      // do stuff
+      // Set the value of a register to an integer.
       printf("LDI Operands:\n");
       printf("Num of operands = %d\n", num_operands);
       printf("Operand 1 = %d\n", operands[0]);
       printf("Operand 2 = %d\n", operands[1]);
+      cpu->registers[operands[0]] = (int)operands[1];
+      printf("register = %d\n", cpu->registers[operands[0]]);
       cpu->PC += 3;
       break;
     case PRN:
-      // do stuff
-      printf("PRN Operands:\n");
-      printf("Num of operands = %d\n", num_operands);
-      printf("Operand 1 = %d\n", operands[0]);
+      // Print to the console the decimal integer value that is stored in the given register.
+      printf("PRN: Operand = %d\n", operands[0]);
       cpu->PC += 2;
       break;
     case HLT:
