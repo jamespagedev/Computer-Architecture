@@ -6,8 +6,13 @@ struct cpu
 {
   // TODO
   // PC
+  unsigned char PC;
   // registers (array)
+  // 8 general-purpose 8-bit numeric registers R0-R7.
+  unsigned char registers[8];
   // ram (array)
+  // The LS-8 has 8-bit addressing, so can address 256 bytes of RAM total.
+  unsigned char ram[256];
 };
 
 // ALU operations
