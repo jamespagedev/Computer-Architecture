@@ -78,4 +78,16 @@ void cpu_run(struct cpu *cpu)
 void cpu_init(struct cpu *cpu)
 {
   // TODO: Initialize the PC and other special registers
+  /*
+    At first, the PC, registers, and RAM should be cleared to zero.
+    (`memset()` might help you clear registers and RAM.)
+  */
+  cpu->PC = 0;
+  memset(cpu->registers, 0, sizeof(cpu->registers));
+  memset(cpu->ram, 0, sizeof(cpu->ram));
+
+  /*
+    Later on, you might do further initialization here, e.g. setting the initial
+    value of the stack pointer.
+  */
 }
