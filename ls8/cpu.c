@@ -21,24 +21,6 @@ void cpu_ram_write(struct cpu *cpu, int index, unsigned char binary)
   cpu->ram[index] = binary;
 }
 
-int get_num_of_operands(const unsigned char ir)
-{
-  switch (ir)
-  {
-  case LDI:
-    return 2;
-  case MUL:
-    return 2;
-  case PRN:
-    return 1;
-  case HLT:
-    return 0;
-  default:
-    printf("Instruction has no operands.\nExiting program...");
-    exit(1);
-  }
-}
-
 void print_binary(const unsigned char dec)
 {
   char binary[] = {'0', '0', '0', '0', '0', '0', '0', '0'};
