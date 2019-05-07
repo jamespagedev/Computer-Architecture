@@ -23,6 +23,11 @@ void cpu_load(struct cpu *cpu, char *file)
  */
 void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB)
 {
+  // remove warnings
+  (void)cpu;
+  (void)regA;
+  (void)regB;
+
   switch (op)
   {
   case ALU_MUL:
@@ -30,6 +35,8 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
     break;
 
     // TODO: implement more ALU ops
+  default:
+    break;
   }
 }
 
