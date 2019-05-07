@@ -31,6 +31,8 @@ int get_num_of_operands(const unsigned char ir)
     return 2;
   case PRN:
     return 1;
+  case HLT:
+    return 0;
   default:
     printf("Instruction has no operands.\nExiting program...");
     exit(1);
@@ -103,7 +105,7 @@ void cpu_load(struct cpu *cpu, char *file)
 {
   if (file == NULL)
   {
-    printf("No file given, using example process...\n\n");
+    printf("No file given, loading example instructions into RAM...\n");
     char data[DATA_LEN] = {
         // From print8.ls8
         0b10000010, // LDI R0,8
@@ -120,30 +122,33 @@ void cpu_load(struct cpu *cpu, char *file)
     {
       cpu->ram[address++] = data[i];
     }
+    printf("Complete.\n\n");
     return;
   }
   // TODO: Replace this with something less hard-coded
-  printf("Running file %s ...\n\n", file);
+  printf("Loading file %s into RAM...\n", file);
   FILE *fp;
   char line[512];
   int index = 0;
   int base_num = 2;
+  char *endptr;
 
   fp = fopen(file, "r");
 
   while (fgets(line, sizeof(line), fp) != NULL)
   {
-    if (line[0] != '0' && line[0] != '1')
+    unsigned char binary_num = strtoul(line, &endptr, base_num);
+    if (endptr == line)
     {
       printf("Skipping line... %s\n", line);
-      continue;
+      continue; // skip to next line iteration in while loop
     }
-    char *endptr;
-    unsigned char binary_num = strtoul(line, &endptr, base_num);
+    // else, endptr = '\0'
     cpu_ram_write(cpu, index++, binary_num);
   }
 
   fclose(fp);
+  printf("File loaded into RAM successfully.\n\n");
 }
 
 /**
@@ -166,6 +171,8 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
  */
 void cpu_run(struct cpu *cpu)
 {
+  printf("Executing instructions from RAM on CPU...\n");
+  printf("--------------------------------------------------------\n");
   int running = 1, num_operands; // True until we get a HLT instruction
 
   unsigned char IR;
@@ -179,20 +186,17 @@ void cpu_run(struct cpu *cpu)
       that result in `IR`, the _Instruction Register_.
     */
     IR = cpu_ram_read(cpu, cpu->PC);
-    if (IR == HLT)
-    {
-      return;
-    }
-    print_ir_bin_hex_dec(IR);
-    printf("\n");
-    // 2. Figure out how many operands this next instruction requires
-    num_operands = get_num_of_operands(IR);
-    // 3. Get the appropriate value(s) of the operands following this instruction
+    num_operands = ((IR >> 6) & 0b11);
     unsigned char operands[sizeof(num_operands)];
     for (int i = 0, c = 1; i < num_operands; i++, c++)
     {
       operands[i] = cpu_ram_read(cpu, cpu->PC + c);
     }
+
+    // 2. Figure out how many operands this next instruction requires
+
+    // 3. Get the appropriate value(s) of the operands following this instruction
+
     // 4. switch() over it to decide on a course of action.
     switch (IR)
     {
@@ -200,37 +204,50 @@ void cpu_run(struct cpu *cpu)
     // 6. Move the PC to the next instruction.
     case LDI:
       // Set the value of a register to an integer.
-      printf("LDI Operands:\n");
+      print_ir_bin_hex_dec(IR);
+      printf("\n");
+      printf("LDI Operand(s):\n");
       printf("Num of operands = %d\n", num_operands);
       printf("Operand 1 = %d\n", operands[0]);
       printf("Operand 2 = %d\n", operands[1]);
       cpu->registers[operands[0]] = (int)operands[1];
-      printf("register = %d\n", cpu->registers[operands[0]]);
-      cpu->PC += 3;
+      printf("value of %d stored in register[%d]\n", cpu->registers[operands[0]], operands[0]);
+      printf("--------------------------------------------------------\n");
+      cpu->PC += (num_operands + 1);
       break;
     case MUL:
       // Multiply the values in two registers together and store the result in registerA.
-      printf("MUL Operands:\n");
+      print_ir_bin_hex_dec(IR);
+      printf("\n");
+      printf("MUL Operand(s):\n");
       printf("Num of operands = %d\n", num_operands);
       printf("Operand 1 = %d\n", operands[0]);
       printf("Operand 2 = %d\n", operands[1]);
-      cpu->registers[operands[0]] = (operands[0] * operands[1]);
-      printf("Product of registerA = %d\n", cpu->registers[operands[0]]);
-      cpu->PC += 3;
+      cpu->registers[operands[0]] = (cpu->registers[operands[0]] * cpu->registers[operands[1]]);
+      printf("Product value of register[%d] = %d\n", operands[0], cpu->registers[operands[0]]);
+      printf("stored product value of %d in register[%d]\n", cpu->registers[operands[0]], operands[0]);
+      printf("--------------------------------------------------------\n");
+      cpu->PC += (num_operands + 1);
       break;
     case PRN:
       // Print to the console the decimal integer value that is stored in the given register.
-      printf("PRN: Operand = %d\n", operands[0]);
-      cpu->PC += 2;
+      print_ir_bin_hex_dec(IR);
+      printf("\n");
+      printf("PRN Operand(s):\n");
+      printf("Num of operands = %d\n", num_operands);
+      printf("Operand 1 = %d\n", operands[0]);
+      printf("register[%d] = %d\n", operands[0], cpu->registers[operands[0]]);
+      printf("--------------------------------------------------------\n");
+      cpu->PC += (num_operands + 1);
       break;
     case HLT:
+      printf("\nInstructions executed successfully, exiting program...\n\n");
       running = 0;
       break;
     default:
-      printf("Instruction not recognized. Exiting program...");
+      printf("Instruction not recognized. Exiting program...\n\n");
       exit(1);
     }
-    printf("--------------------------------------------------------\n");
   }
 }
 
@@ -244,6 +261,7 @@ void cpu_init(struct cpu *cpu)
     At first, the PC, registers, and RAM should be cleared to zero.
     (`memset()` might help you clear registers and RAM.)
   */
+  printf("Initializing CPU...\n");
   cpu->PC = 0;
   memset(cpu->registers, 0, sizeof(cpu->registers) - 1);
   memset(cpu->ram, 0, sizeof(cpu->ram));
@@ -257,6 +275,7 @@ void cpu_init(struct cpu *cpu)
     - RAM is cleared to `0`.
   */
   cpu->registers[7] = 0xF4;
+  printf("Complete.\n\n");
 
   /*
     Later on, you might do further initialization here, e.g. setting the initial
