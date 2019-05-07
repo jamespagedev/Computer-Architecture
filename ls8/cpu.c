@@ -16,13 +16,18 @@ unsigned char cpu_ram_read(struct cpu *cpu, unsigned char pc)
   return cpu->ram[pc];
 }
 
-void cpu_ram_write(struct cpu *cpu) {}
+void cpu_ram_write(struct cpu *cpu, int index, unsigned char binary)
+{
+  cpu->ram[index] = binary;
+}
 
 int get_num_of_operands(const unsigned char ir)
 {
   switch (ir)
   {
   case LDI:
+    return 2;
+  case MUL:
     return 2;
   case PRN:
     return 1;
@@ -121,6 +126,8 @@ void cpu_load(struct cpu *cpu, char *file)
   printf("Running file %s ...\n\n", file);
   FILE *fp;
   char line[512];
+  int index = 0;
+  int base_num = 2;
 
   fp = fopen(file, "r");
 
@@ -131,11 +138,12 @@ void cpu_load(struct cpu *cpu, char *file)
       printf("Skipping line... %s\n", line);
       continue;
     }
-    printf("line = %s\n", line);
+    char *endptr;
+    unsigned char binary_num = strtoul(line, &endptr, base_num);
+    cpu_ram_write(cpu, index++, binary_num);
   }
 
   fclose(fp);
-  exit(0); // remove line after figuring out how to get cpu_ram_write() to work...
 }
 
 /**
@@ -200,6 +208,16 @@ void cpu_run(struct cpu *cpu)
       printf("register = %d\n", cpu->registers[operands[0]]);
       cpu->PC += 3;
       break;
+    case MUL:
+      // Multiply the values in two registers together and store the result in registerA.
+      printf("MUL Operands:\n");
+      printf("Num of operands = %d\n", num_operands);
+      printf("Operand 1 = %d\n", operands[0]);
+      printf("Operand 2 = %d\n", operands[1]);
+      cpu->registers[operands[0]] = (operands[0] * operands[1]);
+      printf("Product of registerA = %d\n", cpu->registers[operands[0]]);
+      cpu->PC += 3;
+      break;
     case PRN:
       // Print to the console the decimal integer value that is stored in the given register.
       printf("PRN: Operand = %d\n", operands[0]);
@@ -227,8 +245,18 @@ void cpu_init(struct cpu *cpu)
     (`memset()` might help you clear registers and RAM.)
   */
   cpu->PC = 0;
-  memset(cpu->registers, 0, sizeof(cpu->registers));
+  memset(cpu->registers, 0, sizeof(cpu->registers) - 1);
   memset(cpu->ram, 0, sizeof(cpu->ram));
+
+  /*
+    When the LS-8 is booted, the following steps occur:
+
+    - `R0`-`R6` are cleared to `0`.
+    - >>>>>>>>>>>>>>>>>>>`R7` is set to `0xF4`.<<<<<<<<<<<<<<<<<<<
+    - `PC` and `FL` registers are cleared to `0`.
+    - RAM is cleared to `0`.
+  */
+  cpu->registers[7] = 0xF4;
 
   /*
     Later on, you might do further initialization here, e.g. setting the initial
