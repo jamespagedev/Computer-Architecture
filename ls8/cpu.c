@@ -128,9 +128,27 @@ void cpu_load(struct cpu *cpu, char *file)
   // TODO: Replace this with something less hard-coded
   printf("Loading file %s into RAM...\n", file);
   FILE *fp;
+
+  /*
+    | Level |   Capacity   | Lookup Time (nanoseconds) |
+    | :---: | :----------: | :-----------------------: |
+    |  L1   |    2-8 KB    |           ~1 ns           |
+    |  L2   |  256-512 KB  |           ~3 ns           |
+    |  L3   | 1024-8192 KB |          ~12 ns           |
+    |  RAM  | 8-32 **GB**  |          ~100 ns          |
+
+    Using L2, since I don't see any files where more will be needed
+  */
   char line[512];
+
+  // used for keeping track of the current address in the ram
   int index = 0;
+
+  // used for converting str value pulled from line into binary
   int base_num = 2;
+
+  // will either be '\0' or the str(line)... after used by strtoul()
+  //    used to either skip line or validate the value, and plug it into RAM
   char *endptr;
 
   fp = fopen(file, "r");
@@ -186,22 +204,20 @@ void cpu_run(struct cpu *cpu)
       that result in `IR`, the _Instruction Register_.
     */
     IR = cpu_ram_read(cpu, cpu->PC);
+    // 2. Figure out how many operands this next instruction requires
     num_operands = ((IR >> 6) & 0b11);
+    // 3. Get the appropriate value(s) of the operands following this instruction
     unsigned char operands[sizeof(num_operands)];
     for (int i = 0, c = 1; i < num_operands; i++, c++)
     {
       operands[i] = cpu_ram_read(cpu, cpu->PC + c);
     }
-
-    // 2. Figure out how many operands this next instruction requires
-
-    // 3. Get the appropriate value(s) of the operands following this instruction
-
     // 4. switch() over it to decide on a course of action.
     switch (IR)
     {
-    // 5. Do whatever the instruction should do according to the spec.
-    // 6. Move the PC to the next instruction.
+    // case *:
+    //    5. Do whatever the instruction should do according to the spec.
+    //    6. Move the PC to the next instruction.
     case LDI:
       // Set the value of a register to an integer.
       print_ir_bin_hex_dec(IR);
@@ -263,7 +279,7 @@ void cpu_init(struct cpu *cpu)
   */
   printf("Initializing CPU...\n");
   cpu->PC = 0;
-  memset(cpu->registers, 0, sizeof(cpu->registers) - 1);
+  memset(cpu->registers, 0, sizeof(cpu->registers) - 1); // R7 is skipped, because it will be initialized as 0xF4
   memset(cpu->ram, 0, sizeof(cpu->ram));
 
   /*
