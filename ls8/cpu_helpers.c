@@ -148,6 +148,28 @@ void print_ir_bin_hex_dec(const unsigned char ir)
   print_binary(ir);
 }
 
+/**
+ * ALU
+ */
+void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB)
+{
+  // remove warnings
+  (void)cpu;
+  (void)regA;
+  (void)regB;
+
+  switch (op)
+  {
+  case ALU_MUL:
+    // TODO
+    cpu->registers[regA] = (cpu->registers[regA] * cpu->registers[regB]);
+    break;
+    // TODO: implement more ALU ops
+  default:
+    break;
+  }
+}
+
 // ***************************************** cpu_run support functions *****************************************
 void ldi(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands)
 {
@@ -173,7 +195,7 @@ void mul(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *ope
   printf("Num of operands = %d\n", num_operands);
   printf("Operand 1 = %d\n", operands[0]);
   printf("Operand 2 = %d\n", operands[1]);
-  cpu->registers[operands[0]] = (cpu->registers[operands[0]] * cpu->registers[operands[1]]);
+  alu(cpu, ALU_MUL, operands[0], operands[1]);
   printf("Product value of register[%d] = %d\n", operands[0], cpu->registers[operands[0]]);
   printf("stored product value of %d in register[%d]\n", cpu->registers[operands[0]], operands[0]);
   printf("--------------------------------------------------------\n");

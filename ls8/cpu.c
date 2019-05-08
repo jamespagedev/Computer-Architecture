@@ -19,28 +19,6 @@ void cpu_load(struct cpu *cpu, char *file)
 }
 
 /**
- * ALU
- */
-void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB)
-{
-  // remove warnings
-  (void)cpu;
-  (void)regA;
-  (void)regB;
-
-  switch (op)
-  {
-  case ALU_MUL:
-    // TODO
-    break;
-
-    // TODO: implement more ALU ops
-  default:
-    break;
-  }
-}
-
-/**
  * Run the CPU
  */
 void cpu_run(struct cpu *cpu)

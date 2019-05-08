@@ -8,6 +8,7 @@ extern void cpu_load_default(struct cpu *cpu);
 extern void cpu_load_file(struct cpu *cpu, char *file);
 extern void print_binary(const unsigned char dec);
 extern void print_ir_bin_hex_dec(const unsigned char ir);
+extern void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB);
 
 // ***************************************** cpu_run support functions *****************************************
 extern void ldi(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands);
