@@ -14,5 +14,7 @@ extern void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned ch
 extern void ldi(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands);
 extern void mul(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands);
 extern void prn(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands);
+extern void pop(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands);
+extern void push(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands);
 
 #endif

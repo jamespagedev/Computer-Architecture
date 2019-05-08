@@ -166,7 +166,8 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
     break;
     // TODO: implement more ALU ops
   default:
-    break;
+    printf("Error: alu op not recognized, exiting program...\n\n");
+    exit(1);
   }
 }
 
@@ -211,6 +212,40 @@ void prn(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *ope
   printf("Num of operands = %d\n", num_operands);
   printf("Operand 1 = %d\n", operands[0]);
   printf("register[%d] = %d\n", operands[0], cpu->registers[operands[0]]);
+  printf("--------------------------------------------------------\n");
+  cpu->PC += (num_operands + 1);
+}
+
+void pop(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands)
+{
+  print_ir_bin_hex_dec(IR);
+  printf("\n");
+  printf("POP Operand(s):\n");
+  printf("Num of operands = %d\n", num_operands);
+  printf("Operand 1 = %d\n", operands[0]);
+  // Copy the value from ram[registers[SP]] to the given registers[PC].
+  cpu->registers[operands[0]] = cpu->ram[cpu->registers[SP]];
+  printf("value %d stored into register[%d]\n", cpu->registers[operands[0]], operands[0]);
+  // increment ram address in registers[SP]
+  cpu->registers[SP]++;
+  printf("register[SP] is now address %X of ram\n", cpu->registers[SP]);
+  printf("--------------------------------------------------------\n");
+  cpu->PC += (num_operands + 1);
+}
+
+void push(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands)
+{
+  print_ir_bin_hex_dec(IR);
+  printf("\n");
+  printf("PUSH Operand(s):\n");
+  printf("Num of operands = %d\n", num_operands);
+  printf("Operand 1 = %d\n", operands[0]);
+  // decrement ram address in registers[SP]
+  cpu->registers[SP]--;
+  printf("register[SP] is now address %X of ram\n", cpu->registers[SP]);
+  // store value from registers[PC] in ram[registers[SP]]
+  cpu->ram[cpu->registers[SP]] = cpu->registers[operands[0]];
+  printf("value %d is now stored in ram address %X\n", cpu->ram[cpu->registers[SP]], cpu->registers[SP]);
   printf("--------------------------------------------------------\n");
   cpu->PC += (num_operands + 1);
 }
