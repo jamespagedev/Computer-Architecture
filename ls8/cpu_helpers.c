@@ -207,6 +207,22 @@ void ldi(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *ope
   cpu->PC += (num_operands + 1);
 }
 
+void add(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands)
+{
+  // Multiply the values in two registers together and store the result in registerA.
+  print_ir_bin_hex_dec(IR);
+  printf("\n");
+  printf("ADD Operand(s):\n");
+  printf("Num of operands = %d\n", num_operands);
+  printf("Operand 1 = %d\n", operands[0]);
+  printf("Operand 2 = %d\n", operands[1]);
+  alu(cpu, ALU_ADD, operands[0], operands[1]);
+  printf("Sum value of register[%d] = %d\n", operands[0], cpu->registers[operands[0]]);
+  printf("stored sum value of %d in register[%d]\n", cpu->registers[operands[0]], operands[0]);
+  printf("--------------------------------------------------------\n");
+  cpu->PC += (num_operands + 1);
+}
+
 void mul(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands)
 {
   // Multiply the values in two registers together and store the result in registerA.

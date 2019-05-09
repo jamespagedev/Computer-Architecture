@@ -14,6 +14,7 @@ extern void push_ram_value(struct cpu *cpu, unsigned char value);
 
 // ***************************************** cpu_run support functions *****************************************
 extern void ldi(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands);
+extern void add(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands);
 extern void mul(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands);
 extern void prn(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands);
 extern void pop(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands);

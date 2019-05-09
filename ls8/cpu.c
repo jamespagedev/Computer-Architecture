@@ -55,6 +55,9 @@ void cpu_run(struct cpu *cpu)
     case LDI:
       ldi(cpu, IR, num_operands, operands);
       break;
+    case ADD:
+      add(cpu, IR, num_operands, operands);
+      break;
     case MUL:
       mul(cpu, IR, num_operands, operands);
       break;
