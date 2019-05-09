@@ -165,6 +165,8 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
     cpu->registers[regA] = (cpu->registers[regA] * cpu->registers[regB]);
     break;
     // TODO: implement more ALU ops
+  case ALU_ADD:
+    cpu->registers[regA] = (cpu->registers[regA] + cpu->registers[regB]);
   default:
     printf("Error: alu op not recognized, exiting program...\n\n");
     exit(1);
@@ -264,7 +266,7 @@ void push(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *op
 void call(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands)
 {
   // The address of the **_instruction_** _directly after_ `CALL` is pushed onto the stack.
-  // unsigned char return_IR = cpu_ram_read(cpu, cpu->PC + num_operands + 1);
+  unsigned char return_IR = cpu_ram_read(cpu, cpu->PC + num_operands + 1);
   push(cpu, IR, num_operands, operands);
 
   // The PC is set to the address stored in the given register.
