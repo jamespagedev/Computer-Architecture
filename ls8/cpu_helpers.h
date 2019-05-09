@@ -19,5 +19,6 @@ extern void prn(struct cpu *cpu, unsigned char IR, int num_operands, unsigned ch
 extern void pop(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands);
 extern void push(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands);
 extern void call(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands);
+extern void ret(struct cpu *cpu);
 
 #endif

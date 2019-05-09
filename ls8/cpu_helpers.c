@@ -167,6 +167,7 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
     // TODO: implement more ALU ops
   case ALU_ADD:
     cpu->registers[regA] = (cpu->registers[regA] + cpu->registers[regB]);
+    break;
   default:
     printf("Error: alu op not recognized, exiting program...\n\n");
     exit(1);
@@ -265,14 +266,27 @@ void push(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *op
 
 void call(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands)
 {
+  print_ir_bin_hex_dec(IR);
+  printf("\n");
+  printf("CALL Operand(s):\n");
+  printf("Num of operands = %d\n", num_operands);
+  printf("Operand 1 = %d\n", operands[0]);
   // The address of the **_instruction_** _directly after_ `CALL` is pushed onto the stack.
-  unsigned char return_IR = cpu_ram_read(cpu, cpu->PC + num_operands + 1);
-  push(cpu, IR, num_operands, operands);
+  unsigned char return_pc = (cpu->PC + num_operands + 1);
+  push_ram_value(cpu, return_pc);
 
   // The PC is set to the address stored in the given register.
   cpu->PC = cpu->registers[operands[0]];
+  printf("register[SP] is now address %X of ram\n", cpu->registers[SP]);
+  printf("pc address %X is now stored in ram address %X\n", cpu->ram[cpu->registers[SP]], cpu->registers[SP]);
+  printf("pc is now %d\n", cpu->PC);
+}
 
-  // We jump to that location in RAM and execute the first instruction in the subroutine.
+void ret(struct cpu *cpu)
+{
+  // The address of the **_instruction_** _directly after_ `CALL` is pushed onto the stack.
+  pop_reg_value(cpu, 0, cpu->ram[cpu->registers[SP]]);
 
-  // The PC can move forward or backwards from its current location.
+  // The PC is set to the address stored in the given register.
+  cpu->PC = cpu->registers[0];
 }
