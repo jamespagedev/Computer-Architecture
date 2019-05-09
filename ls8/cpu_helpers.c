@@ -153,11 +153,6 @@ void print_ir_bin_hex_dec(const unsigned char ir)
  */
 void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB)
 {
-  // remove warnings
-  (void)cpu;
-  (void)regA;
-  (void)regB;
-
   switch (op)
   {
   case ALU_MUL:
@@ -195,107 +190,151 @@ void push_ram_value(struct cpu *cpu, unsigned char value)
 void ldi(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands)
 {
   // Set the value of a register to an integer.
-  print_ir_bin_hex_dec(IR);
-  printf("\n");
-  printf("LDI Operand(s):\n");
-  printf("Num of operands = %d\n", num_operands);
-  printf("Operand 1 = %d\n", operands[0]);
-  printf("Operand 2 = %d\n", operands[1]);
+  if (DEBUGGER)
+  {
+    print_ir_bin_hex_dec(IR);
+    printf("\n");
+    printf("LDI Operand(s):\n");
+    printf("Num of operands = %d\n", num_operands);
+    printf("Operand 1 = %d\n", operands[0]);
+    printf("Operand 2 = %d\n", operands[1]);
+  }
   cpu->registers[operands[0]] = (int)operands[1];
-  printf("value of %d stored in register[%d]\n", cpu->registers[operands[0]], operands[0]);
-  printf("--------------------------------------------------------\n");
+
+  if (DEBUGGER)
+  {
+    printf("value of %d stored in register[%d]\n", cpu->registers[operands[0]], operands[0]);
+    printf("--------------------------------------------------------\n");
+  }
   cpu->PC += (num_operands + 1);
 }
 
 void add(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands)
 {
   // Multiply the values in two registers together and store the result in registerA.
-  print_ir_bin_hex_dec(IR);
-  printf("\n");
-  printf("ADD Operand(s):\n");
-  printf("Num of operands = %d\n", num_operands);
-  printf("Operand 1 = %d\n", operands[0]);
-  printf("Operand 2 = %d\n", operands[1]);
+  if (DEBUGGER)
+  {
+    print_ir_bin_hex_dec(IR);
+    printf("\n");
+    printf("ADD Operand(s):\n");
+    printf("Num of operands = %d\n", num_operands);
+    printf("Operand 1 = %d\n", operands[0]);
+    printf("Operand 2 = %d\n", operands[1]);
+  }
   alu(cpu, ALU_ADD, operands[0], operands[1]);
-  printf("Sum value of register[%d] = %d\n", operands[0], cpu->registers[operands[0]]);
-  printf("stored sum value of %d in register[%d]\n", cpu->registers[operands[0]], operands[0]);
-  printf("--------------------------------------------------------\n");
+  if (DEBUGGER)
+  {
+    printf("Sum value of register[%d] = %d\n", operands[0], cpu->registers[operands[0]]);
+    printf("stored sum value of %d in register[%d]\n", cpu->registers[operands[0]], operands[0]);
+    printf("--------------------------------------------------------\n");
+  }
   cpu->PC += (num_operands + 1);
 }
 
 void mul(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands)
 {
   // Multiply the values in two registers together and store the result in registerA.
-  print_ir_bin_hex_dec(IR);
-  printf("\n");
-  printf("MUL Operand(s):\n");
-  printf("Num of operands = %d\n", num_operands);
-  printf("Operand 1 = %d\n", operands[0]);
-  printf("Operand 2 = %d\n", operands[1]);
+  if (DEBUGGER)
+  {
+    print_ir_bin_hex_dec(IR);
+    printf("\n");
+    printf("MUL Operand(s):\n");
+    printf("Num of operands = %d\n", num_operands);
+    printf("Operand 1 = %d\n", operands[0]);
+    printf("Operand 2 = %d\n", operands[1]);
+  }
   alu(cpu, ALU_MUL, operands[0], operands[1]);
-  printf("Product value of register[%d] = %d\n", operands[0], cpu->registers[operands[0]]);
-  printf("stored product value of %d in register[%d]\n", cpu->registers[operands[0]], operands[0]);
-  printf("--------------------------------------------------------\n");
+  if (DEBUGGER)
+  {
+    printf("Product value of register[%d] = %d\n", operands[0], cpu->registers[operands[0]]);
+    printf("stored product value of %d in register[%d]\n", cpu->registers[operands[0]], operands[0]);
+    printf("--------------------------------------------------------\n");
+  }
   cpu->PC += (num_operands + 1);
 }
 
 void prn(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands)
 {
   // Print to the console the decimal integer value that is stored in the given register.
-  print_ir_bin_hex_dec(IR);
-  printf("\n");
-  printf("PRN Operand(s):\n");
-  printf("Num of operands = %d\n", num_operands);
-  printf("Operand 1 = %d\n", operands[0]);
-  printf("register[%d] = %d\n", operands[0], cpu->registers[operands[0]]);
-  printf("--------------------------------------------------------\n");
+  if (DEBUGGER)
+  {
+    print_ir_bin_hex_dec(IR);
+    printf("\n");
+    printf("PRN Operand(s):\n");
+    printf("Num of operands = %d\n", num_operands);
+    printf("Operand 1 = %d\n", operands[0]);
+    printf("register[%d] = %d\n", operands[0], cpu->registers[operands[0]]);
+    printf("--------------------------------------------------------\n");
+  }
+  else
+  {
+    printf("%d\n", cpu->registers[operands[0]]);
+  }
   cpu->PC += (num_operands + 1);
 }
 
 void pop(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands)
 {
-  print_ir_bin_hex_dec(IR);
-  printf("\n");
-  printf("POP Operand(s):\n");
-  printf("Num of operands = %d\n", num_operands);
-  printf("Operand 1 = %d\n", operands[0]);
+  if (DEBUGGER)
+  {
+    print_ir_bin_hex_dec(IR);
+    printf("\n");
+    printf("POP Operand(s):\n");
+    printf("Num of operands = %d\n", num_operands);
+    printf("Operand 1 = %d\n", operands[0]);
+  }
   pop_reg_value(cpu, operands[0], cpu->ram[cpu->registers[SP]]);
-  printf("value %d stored into register[%d]\n", cpu->registers[operands[0]], operands[0]);
-  printf("register[SP] is now address %X of ram\n", cpu->registers[SP]);
-  printf("--------------------------------------------------------\n");
+  if (DEBUGGER)
+  {
+    printf("value %d stored into register[%d]\n", cpu->registers[operands[0]], operands[0]);
+    printf("register[SP] is now address %X of ram\n", cpu->registers[SP]);
+    printf("--------------------------------------------------------\n");
+  }
   cpu->PC += (num_operands + 1);
 }
 
 void push(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands)
 {
-  print_ir_bin_hex_dec(IR);
-  printf("\n");
-  printf("PUSH Operand(s):\n");
-  printf("Num of operands = %d\n", num_operands);
-  printf("Operand 1 = %d\n", operands[0]);
+  if (DEBUGGER)
+  {
+    print_ir_bin_hex_dec(IR);
+    printf("\n");
+    printf("PUSH Operand(s):\n");
+    printf("Num of operands = %d\n", num_operands);
+    printf("Operand 1 = %d\n", operands[0]);
+  }
   push_ram_value(cpu, cpu->registers[operands[0]]);
-  printf("register[SP] is now address %X of ram\n", cpu->registers[SP]);
-  printf("value %d is now stored in ram address %X\n", cpu->ram[cpu->registers[SP]], cpu->registers[SP]);
-  printf("--------------------------------------------------------\n");
+  if (DEBUGGER)
+  {
+    printf("register[SP] is now address %X of ram\n", cpu->registers[SP]);
+    printf("value %d is now stored in ram address %X\n", cpu->ram[cpu->registers[SP]], cpu->registers[SP]);
+    printf("--------------------------------------------------------\n");
+  }
   cpu->PC += (num_operands + 1);
 }
 
 void call(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands)
 {
-  print_ir_bin_hex_dec(IR);
-  printf("\n");
-  printf("CALL Operand(s):\n");
-  printf("Num of operands = %d\n", num_operands);
-  printf("Operand 1 = %d\n", operands[0]);
+  if (DEBUGGER)
+  {
+    print_ir_bin_hex_dec(IR);
+    printf("\n");
+    printf("CALL Operand(s):\n");
+    printf("Num of operands = %d\n", num_operands);
+    printf("Operand 1 = %d\n", operands[0]);
+  }
   // The address of the **_instruction_** _directly after_ `CALL` is pushed onto the stack.
   unsigned char return_pc = (cpu->PC + num_operands + 1);
   push_ram_value(cpu, return_pc);
 
   // The PC is set to the address stored in the given register.
   cpu->PC = cpu->registers[operands[0]];
-  printf("register[SP] is now address %X of ram\n", cpu->registers[SP]);
-  printf("pc address %X is now stored in ram address %X\n", cpu->ram[cpu->registers[SP]], cpu->registers[SP]);
-  printf("pc is now %d\n", cpu->PC);
+  if (DEBUGGER)
+  {
+    printf("register[SP] is now address %X of ram\n", cpu->registers[SP]);
+    printf("pc address %X is now stored in ram address %X\n", cpu->ram[cpu->registers[SP]], cpu->registers[SP]);
+    printf("pc is now %d\n", cpu->PC);
+  }
 }
 
 void ret(struct cpu *cpu)

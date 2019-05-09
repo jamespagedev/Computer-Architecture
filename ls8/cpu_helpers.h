@@ -1,6 +1,8 @@
 #ifndef _CPU_HELPERS_H_
 #define _CPU_HELPERS_H_
 
+#define DEBUGGER 0 // 0 = on, 1 = off
+
 // ********************************************* helper functions **********************************************
 extern unsigned char cpu_ram_read(struct cpu *cpu, unsigned char pc);
 extern void cpu_ram_write(struct cpu *cpu, int index, unsigned char binary);
