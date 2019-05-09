@@ -171,6 +171,23 @@ void alu(struct cpu *cpu, enum alu_op op, unsigned char regA, unsigned char regB
   }
 }
 
+void pop_reg_value(struct cpu *cpu, unsigned char addr, unsigned char value)
+{
+
+  // Copy the value from ram[registers[SP]] to the given registers[PC].
+  cpu->registers[addr] = value;
+  // increment ram address in registers[SP]
+  cpu->registers[SP]++;
+}
+
+void push_ram_value(struct cpu *cpu, unsigned char value)
+{
+  // decrement ram address in registers[SP]
+  cpu->registers[SP]--;
+  // store value from registers[PC] in ram[registers[SP]]
+  cpu->ram[cpu->registers[SP]] = value;
+}
+
 // ***************************************** cpu_run support functions *****************************************
 void ldi(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands)
 {
@@ -223,11 +240,8 @@ void pop(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *ope
   printf("POP Operand(s):\n");
   printf("Num of operands = %d\n", num_operands);
   printf("Operand 1 = %d\n", operands[0]);
-  // Copy the value from ram[registers[SP]] to the given registers[PC].
-  cpu->registers[operands[0]] = cpu->ram[cpu->registers[SP]];
+  pop_reg_value(cpu, operands[0], cpu->ram[cpu->registers[SP]]);
   printf("value %d stored into register[%d]\n", cpu->registers[operands[0]], operands[0]);
-  // increment ram address in registers[SP]
-  cpu->registers[SP]++;
   printf("register[SP] is now address %X of ram\n", cpu->registers[SP]);
   printf("--------------------------------------------------------\n");
   cpu->PC += (num_operands + 1);
@@ -240,12 +254,23 @@ void push(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *op
   printf("PUSH Operand(s):\n");
   printf("Num of operands = %d\n", num_operands);
   printf("Operand 1 = %d\n", operands[0]);
-  // decrement ram address in registers[SP]
-  cpu->registers[SP]--;
+  push_ram_value(cpu, cpu->registers[operands[0]]);
   printf("register[SP] is now address %X of ram\n", cpu->registers[SP]);
-  // store value from registers[PC] in ram[registers[SP]]
-  cpu->ram[cpu->registers[SP]] = cpu->registers[operands[0]];
   printf("value %d is now stored in ram address %X\n", cpu->ram[cpu->registers[SP]], cpu->registers[SP]);
   printf("--------------------------------------------------------\n");
   cpu->PC += (num_operands + 1);
+}
+
+void call(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *operands)
+{
+  // The address of the **_instruction_** _directly after_ `CALL` is pushed onto the stack.
+  // unsigned char return_IR = cpu_ram_read(cpu, cpu->PC + num_operands + 1);
+  push(cpu, IR, num_operands, operands);
+
+  // The PC is set to the address stored in the given register.
+  cpu->PC = cpu->registers[operands[0]];
+
+  // We jump to that location in RAM and execute the first instruction in the subroutine.
+
+  // The PC can move forward or backwards from its current location.
 }

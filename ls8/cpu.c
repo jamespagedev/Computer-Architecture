@@ -67,6 +67,9 @@ void cpu_run(struct cpu *cpu)
     case PUSH:
       push(cpu, IR, num_operands, operands);
       break;
+    case CALL:
+      call(cpu, IR, num_operands, operands);
+      break;
     case HLT:
       // Finished Instructions
       printf("\nInstructions executed successfully, exiting program...\n\n");
