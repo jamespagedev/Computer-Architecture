@@ -334,6 +334,7 @@ void call(struct cpu *cpu, unsigned char IR, int num_operands, unsigned char *op
     printf("register[SP] is now address %X of ram\n", cpu->registers[SP]);
     printf("pc address %X is now stored in ram address %X\n", cpu->ram[cpu->registers[SP]], cpu->registers[SP]);
     printf("pc is now %d\n", cpu->PC);
+    printf("--------------------------------------------------------\n");
   }
 }
 
